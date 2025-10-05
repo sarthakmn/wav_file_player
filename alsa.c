@@ -11,6 +11,7 @@ static float start_vol = 0.0f;
 static float target_vol = 0.5f;
 static int fade_out_var = 0;
 int nxt_prv = 0;
+float balance = 0.0f; // -1.0 (left) to 1.0 (right)
 double timestamp = 0.0;
 q15_t scale_factor;
 
@@ -45,13 +46,18 @@ static int fade_out() {
     return 1;
 }
 
-static void apply_balance(int16_t *buffer, size_t samples, float balance) {
+static void apply_balance(int16_t *buffer, size_t samples) {
+    
     float left_gain = 1.0f - fmaxf(0.0f, balance);
     float right_gain = 1.0f + fminf(0.0f, balance);
     for (size_t i = 0; i < samples; i += 2) {
         buffer[i] *= left_gain;      // Left
         buffer[i + 1] *= right_gain; // Right
     }
+
+    if (balance < -1.0f) balance = -1.0f;
+    if (balance > 1.0f) balance = 1.0f;
+
 }
 
 static snd_pcm_t* init_pcm(unsigned int rate, int channels, int *err) {
@@ -75,10 +81,6 @@ void play(FILE *file, WAVHeader header) {
     int err;
     int16_t *buffer = calloc(BUFFER_SIZE, 1);
     if (!buffer) return;
-
-    float balance = 0.0f;
-    if (balance < -1.0f) balance = -1.0f;
-    if (balance > 1.0f) balance = 1.0f;
 
     snd_pcm_t *pcm_handle = init_pcm(header.sampleRate, header.numChannels, &err);
     if (!pcm_handle) {
@@ -104,7 +106,7 @@ void play(FILE *file, WAVHeader header) {
                 }
 
                 arm_scale_q15(buffer, scale_factor, 1, buffer, bytes_read / 2);
-                apply_balance(buffer, bytes_read / 2, balance);
+                apply_balance(buffer, bytes_read / 2);
                 
                 err = snd_pcm_writei(pcm_handle, buffer, frames);
                 if (err < 0) {

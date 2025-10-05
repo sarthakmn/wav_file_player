@@ -39,6 +39,7 @@ enum state{PLAY=1,PAUSE,STOP,PLUSE,MINUS,NEXT,PREV,FADE_IN,FADE_OUT};
 void play(FILE *fptr,WAVHeader header);
 void save_file(int16_t *buffer, size_t samples);
 extern int nxt_prv;
+extern float balance;
 extern double total_seconds;
 extern double timestamp;
 

@@ -58,6 +58,8 @@ int main() {
             printf("5. Volume -\n");
             printf("6. Next \n");
             printf("7. Prev \n");
+            printf("8. Balance + \n");
+            printf("9. + Balance\n");
             printf("Enter Input : ");
             scanf("%d",&state);
             if(state == STOP)
@@ -77,6 +79,14 @@ int main() {
                 curr_song = prev_song(&songs);
                 state = PLAY;
                 break;
+            }
+            else if(state == 8){
+                balance += 0.1f;
+                state = PLAY;
+            }
+            else if(state == 9){
+                balance -= 0.1f;
+                state = PLAY;
             }
             else{}
         }

@@ -4,7 +4,7 @@ void save_file(int16_t *buffer, size_t bytes_read) {
     static FILE *fptr = NULL;
 
     if (fptr == NULL) {
-        fptr = fopen("../saved_audio.raw", "wb");
+        fptr = fopen("../songs/raw/saved_audio.raw", "wb");
         if (!fptr) {
             perror("Error opening file");
             return;
