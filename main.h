@@ -35,7 +35,7 @@ typedef struct {
 extern FILE *fptr;
 extern pthread_t pt;
 extern volatile int state;
-enum state{PLAY=1,PAUSE,STOP,PLUSE,MINUS,NEXT,PREV,FADE_IN,FADE_OUT};
+enum state{PLAY=1,PAUSE,STOP,PLUSE,MINUS,NEXT,PREV,FADE_IN,FADE_OUT,BASS_UP,BASS_DOWN,MID_UP,MID_DOWN,TREBLE_UP,TREBLE_DOWN};
 void play(FILE *fptr,WAVHeader header);
 void save_file(int16_t *buffer, size_t samples);
 extern int nxt_prv;

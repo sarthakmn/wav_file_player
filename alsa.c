@@ -55,8 +55,8 @@ static void apply_balance(int16_t *buffer, size_t samples) {
         buffer[i + 1] *= right_gain; // Right
     }
 
-    if (balance < -1.0f) balance = -1.0f;
-    if (balance > 1.0f) balance = 1.0f;
+    if (balance <= -1.0f) balance = -1.0f;
+    if (balance >= 1.0f) balance = 1.0f;
 
 }
 
@@ -93,6 +93,7 @@ void play(FILE *file, WAVHeader header) {
     size_t frames = BUFFER_SIZE / frame_bytes;
     
     init_biquad_filter();
+    init_eq_filters();  // Initialize EQ filters
 
     while (1) {
         switch (state) {
@@ -107,6 +108,10 @@ void play(FILE *file, WAVHeader header) {
 
                 arm_scale_q15(buffer, scale_factor, 1, buffer, bytes_read / 2);
                 apply_balance(buffer, bytes_read / 2);
+                
+                // Apply EQ processing
+                eq_settings_t *eq = get_eq_settings();
+                apply_eq(buffer, bytes_read / 2, eq);
                 
                 err = snd_pcm_writei(pcm_handle, buffer, frames);
                 if (err < 0) {
@@ -157,6 +162,36 @@ void play(FILE *file, WAVHeader header) {
                 volume = fmaxf(volume - 0.1f, MIN_VOLUME);
                 scale_factor = (q15_t)(volume * 32768);
                 temp_volume = volume;
+                state = PLAY;
+                break;
+                
+            case BASS_UP:
+                set_bass_gain(get_eq_settings()->bass_gain + 2.0f);
+                state = PLAY;
+                break;
+                
+            case BASS_DOWN:
+                set_bass_gain(get_eq_settings()->bass_gain - 2.0f);
+                state = PLAY;
+                break;
+                
+            case MID_UP:
+                set_mid_gain(get_eq_settings()->mid_gain + 2.0f);
+                state = PLAY;
+                break;
+                
+            case MID_DOWN:
+                set_mid_gain(get_eq_settings()->mid_gain - 2.0f);
+                state = PLAY;
+                break;
+                
+            case TREBLE_UP:
+                set_treble_gain(get_eq_settings()->treble_gain + 2.0f);
+                state = PLAY;
+                break;
+                
+            case TREBLE_DOWN:
+                set_treble_gain(get_eq_settings()->treble_gain - 2.0f);
                 state = PLAY;
                 break;
             default:

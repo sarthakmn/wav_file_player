@@ -58,8 +58,14 @@ int main() {
             printf("5. Volume -\n");
             printf("6. Next \n");
             printf("7. Prev \n");
-            printf("8. Balance + \n");
-            printf("9. + Balance\n");
+            printf("8. Balance + (Current: %.1f)\n", balance);
+            printf("9. Balance - \n");
+            printf("10. Bass + (%.1fdB)\n", get_eq_settings()->bass_gain);
+            printf("11. Bass - \n");
+            printf("12. Mid + (%.1fdB)\n", get_eq_settings()->mid_gain);
+            printf("13. Mid - \n");
+            printf("14. Treble + (%.1fdB)\n", get_eq_settings()->treble_gain);
+            printf("15. Treble - \n");
             printf("Enter Input : ");
             scanf("%d",&state);
             if(state == STOP)
@@ -82,11 +88,34 @@ int main() {
             }
             else if(state == 8){
                 balance += 0.1f;
+                if (balance <= -1.0f) balance = -1.0f;
+                if (balance >= 1.0f) balance = 1.0f;
+
                 state = PLAY;
             }
             else if(state == 9){
                 balance -= 0.1f;
+                if (balance <= -1.0f) balance = -1.0f;
+                if (balance >= 1.0f) balance = 1.0f;
                 state = PLAY;
+            }
+            else if(state == 10){
+                state = BASS_UP;
+            }
+            else if(state == 11){
+                state = BASS_DOWN;
+            }
+            else if(state == 12){
+                state = MID_UP;
+            }
+            else if(state == 13){
+                state = MID_DOWN;
+            }
+            else if(state == 14){
+                state = TREBLE_UP;
+            }
+            else if(state == 15){
+                state = TREBLE_DOWN;
             }
             else{}
         }
